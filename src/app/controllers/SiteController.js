@@ -1,11 +1,7 @@
 class SiteController {
 
-    home(req, res, next) {
-        res.render('home');
-    }
-
-    search(req, res) {
-        res.render('search');
+    category(req, res, next) {
+        res.json();
     }
 
 }

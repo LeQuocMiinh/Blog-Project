@@ -1,11 +1,13 @@
+// quản lý các biến môi trường
+require('dotenv').config();
 
 const express = require('express');
-const route = require('./src/routes');
+const route = require('./src/routes/app');
 
-const path = require('path');
 const app = express();
 const port = 4000;
 
+//kết nối database
 const db = require('./src/config/db');
 const cors = require('cors');
 db.connect();
