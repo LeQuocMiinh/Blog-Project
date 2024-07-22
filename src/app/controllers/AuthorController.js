@@ -1,5 +1,5 @@
 const Author = require('../models/author');
-const jwtService = require('../middlewares/jwt.service');
+const jwtService = require('../modules/jwt-service');
 const bcrypt = require('bcrypt');
 
 class AuthorController {
@@ -10,7 +10,7 @@ class AuthorController {
             const { name, email, password } = req.body;
             if (!name || !email || !password) {
                 return res.status(400).json({
-                    message: 'Các trường đều là bắt buộc!',
+                    message: 'Các trường đều là bắt buộc !',
                     status: false
                 });
             }
@@ -22,7 +22,7 @@ class AuthorController {
                 ]
             });
             if (existsUser) {
-                return res.status(400).json({ message: 'Tên hoặc email đã tồn tại', status: false });
+                return res.status(400).json({ message: 'Tên hoặc email đã tồn tại !', status: false });
             }
 
             // Kiểm tra nếu mật khẩu được truyền vào = password secret
@@ -36,8 +36,8 @@ class AuthorController {
             const hashedPassword = await bcrypt.hash(password, 10);
 
             const newAuthor = new Author({
-                name: req.body.name,
-                email: req.body.email,
+                name: name,
+                email: email,
                 password: hashedPassword,
                 role: role
             });
@@ -50,7 +50,7 @@ class AuthorController {
             });
 
         } catch (error) {
-            res.status(500).json({ error: 'Đã xảy ra lỗi khi tạo tài khoản' });
+            res.status(500).json({ error: 'Đã xảy ra lỗi khi tạo tài khoản !' });
         }
     }
 
@@ -68,7 +68,7 @@ class AuthorController {
             const user = await Author.findOne({ email });
             if (!user) {
                 return res.status(401).json({
-                    message: "Tài khoản không tồn tại",
+                    message: "Tài khoản không tồn tại !",
                     status: false
                 });
             }
@@ -97,7 +97,7 @@ class AuthorController {
 
         } catch (error) {
             res.status(500).json({
-                message: 'Đã xảy ra lỗi khi đăng nhập',
+                message: 'Đã xảy ra lỗi khi đăng nhập !',
                 status: false
             });
         }

@@ -1,5 +1,4 @@
 const jwt = require('jsonwebtoken');
-const { UnauthorizedError } = require('../../util/api-errors');
 
 const authenticate = async (req, res, next) => {
     try {

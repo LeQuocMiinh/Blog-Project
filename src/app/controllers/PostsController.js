@@ -1,5 +1,6 @@
-const CategoryScheme = require('../models/category');
-const TagScheme = require('../models/tag');
+
+const Post = require('../models/post');
+
 
 class PostsController {
 
@@ -7,31 +8,31 @@ class PostsController {
         res.json('SinglePost Nè');
     }
 
-    createPost(req, res, next) {
-        res.json("api chỉ dành cho admin");
-    }
-
-    // [POST] - Create Category
-    async createCategory(req, res, next) {
+    // [POST] - Create Post
+    async createPost(req, res, next) {
         try {
-            const { title, description, type } = req.body;
-            if (!title) {
+            const { title, description, content, author, category, tag} = req.body;
+            if (!title || !description || !content || !category || !tag) {
                 return res.status(400).json({
-                    message: "Vui lòng nhập đầy đủ !",
+                    message: "Các trường đều là bắt buộc !",
                     status: false
                 });
             }
 
-            const newCategory =  new ((type == "category") ? CategoryScheme : TagScheme)({
+            const newPost = new Post({
                 title: title,
                 description: description,
-                type: type 
-            }) 
+                content: content,
+                category: [category],
+                tag: [tag],
+                author: author
+            });
 
-            await newCategory.save();
+            await newPost.save();
+
             res.json({
-                message: (type == "category") ? "Thêm danh mục bài viết thành công" : "Thêm thẻ bài viết thành công",
-                status: true
+                message: "Thêm bài viết thành công",
+                status: true,
             });
 
         } catch (error) {
@@ -39,7 +40,7 @@ class PostsController {
                 message: "Đã xảy ra lỗi, vui lòng thử lại sau !",
                 status: false
             });
-        }
+       }
     }
 
 }
