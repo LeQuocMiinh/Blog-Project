@@ -1,4 +1,6 @@
 const CategoryScheme = require('../models/category');
+const TagScheme = require('../models/tag');
+
 class PostsController {
 
     getPostsByFilter(req, res, next) {
@@ -12,7 +14,7 @@ class PostsController {
     // [POST] - Create Category
     async createCategory(req, res, next) {
         try {
-            const { title, description } = req.body;
+            const { title, description, type } = req.body;
             if (!title) {
                 return res.status(400).json({
                     message: "Vui lòng nhập đầy đủ !",
@@ -20,28 +22,25 @@ class PostsController {
                 });
             }
 
-            const category = new CategoryScheme({
+            const newCategory =  new ((type == "category") ? CategoryScheme : TagScheme)({
                 title: title,
                 description: description,
-                type: "Danh mục"
-            });
+                type: type 
+            }) 
 
-            await category.save();
-
+            await newCategory.save();
             res.json({
-                message: "Thêm danh mục bài viết thành công",
+                message: (type == "category") ? "Thêm danh mục bài viết thành công" : "Thêm thẻ bài viết thành công",
                 status: true
             });
 
         } catch (error) {
             res.status(500).json({
-                message: error,
+                message: "Đã xảy ra lỗi, vui lòng thử lại sau !",
                 status: false
             });
         }
-
     }
-
 
 }
 
