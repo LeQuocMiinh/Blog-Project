@@ -6,7 +6,7 @@ const CategorySchema = new Schema({
     title: { type: String, maxLength: 255, required: true },
     description: { type: String, maxLength: 255 },
     quantity_post: { type: Number, default: 0 },
-    type: {type: String, default: "category"},
+    type: {type: String, default: "category", required: true},
     slug: { type: String}
 }, {
     timestamps: true
