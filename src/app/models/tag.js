@@ -6,8 +6,9 @@ const TagSchema = new Schema({
     title: { type: String, maxLength: 255, required: true },
     description: { type: String, maxLength: 255 },
     quantity_post: { type: Number, default: 0 },
-    type: {type: String, default: "tag", required: true},
-    slug: { type: String}
+    type: {type: String, default: "tag"},
+    slug: { type: String },
+    deleted: {type: Boolean, default: false}
 }, {
     timestamps: true
 });
