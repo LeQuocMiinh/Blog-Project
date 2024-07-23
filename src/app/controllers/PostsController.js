@@ -1,7 +1,6 @@
 
 const Post = require('../models/post');
 
-
 class PostsController {
 
     getPostsByFilter(req, res, next) {

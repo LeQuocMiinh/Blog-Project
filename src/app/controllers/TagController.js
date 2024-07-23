@@ -1,14 +1,13 @@
-const CategorySchema = require('../models/category');
-const { generatePagination } = require('../modules/generate-pagination');
+const TagSchema = require('../models/tag');
 
-class CategoryController {
+class TagController {
 
-    // [GET] - Get all categories
-    async getAllCategories(req, res, next) {
+    // [GET] - Get all tags
+    async getAllTags(req, res, next) {
         try {
-            const resultPagination = await generatePagination(CategorySchema, req.query.page, req.query.perPage);
+            const resultTags = await TagSchema.find({});
             res.json({
-                ...resultPagination,
+                data: resultTags,
                 status: true
             })
         } catch (error) {
@@ -19,10 +18,10 @@ class CategoryController {
         }
     }
     
-    // [POST] - Create Category
-    async createCategory(req, res, next) {
+    // [POST] - Create Tag
+    async createTag(req, res, next) {
         try {
-            const { title, description, parent} = req.body;
+            const { title, description, type } = req.body;
             if (!title) {
                 return res.status(400).json({
                     message: "Vui lòng nhập đầy đủ !",
@@ -30,18 +29,18 @@ class CategoryController {
                 });
             }
 
-            const newCategory = new CategorySchema ({
+            const newTag = new  TagSchema({
                 title: title,
                 description: description,
-                type: "category",
-                parent: parent
+                type: "tag"
             })
 
-            await newCategory.save();
+            await newTag.save();
             res.json({
-                message: "Thêm danh mục bài viết thành công",
+                message: "Thêm thẻ bài viết thành công",
                 status: true
             });
+
         } catch (error) {
             res.status(500).json({
                 message: "Đã xảy ra lỗi, vui lòng thử lại sau !",
@@ -51,10 +50,10 @@ class CategoryController {
     }
 
     // [DELETE] - Move categories to trash
-    async categoryToTrash(req, res, next) {
+    async tagsToTrash(req, res, next) {
         try {
             const ids = req.params.id.split(",");
-            await CategorySchema.updateMany(
+            await TagSchema.updateMany(
                 { _id: { $in: ids } },
                 { $set: { deleted: true } }
             );
@@ -71,15 +70,15 @@ class CategoryController {
     }
 
     // [POST] - Move categories out the trash
-    async categoryOutTrash(req, res, next) {
+    async tagsOutTrash(req, res, next) {
         try {
             const ids = req.params.id.split(",");
-            await CategorySchema.updateMany(
+            await TagSchema.updateMany(
                 { _id: { $in: ids } },
                 { $set: { deleted: false } }
             );
             res.json({
-                message: "Khôi phục danh mục thành công",
+                message: "Khôi phục thẻ thành công",
                 status: true
             });
         } catch (error) {
@@ -91,12 +90,12 @@ class CategoryController {
     }
 
     // [DELETE] - Permanently deleted 
-    async permanentlyDeleteCategory(req, res, next) {
+    async permanentlyDeleteTags(req, res, next) {
         try {
             const ids = req.params.id.split(",");
-            await CategorySchema.deleteMany({_id: {$in: ids}});
+            await TagSchema.deleteMany({_id: {$in: ids}});
             res.json({
-                message: "Xóa vĩnh viễn danh mục thành công",
+                message: "Xóa vĩnh viễn thẻ thành công",
                 status: true
             });
         } catch (error) {
@@ -109,4 +108,4 @@ class CategoryController {
 }
 
 
-module.exports = new CategoryController();
+module.exports = new TagController();
