@@ -9,6 +9,6 @@ router.delete('/trash/:id', authenticate, authorizeAdmin, tagController.tagsToTr
 router.post('/restore/:id', authenticate, authorizeAdmin, tagController.tagsOutTrash);
 router.delete('/delete/:id', authenticate, authorizeAdmin, tagController.permanentlyDeleteTags);
 router.use((req, res, next) => {
-    res.status(404).send('Not Found');
+    res.status(404).send('API Not Found');
 });
 module.exports = router;

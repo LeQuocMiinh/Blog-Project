@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { BadRequestError } = require('../../util/api-errors');
-
+const { BadRequestError } = require('./api-errors');
 
 const generateJWT = async (
     payload,
