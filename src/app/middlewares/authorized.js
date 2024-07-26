@@ -5,7 +5,7 @@ const authenticate = async (req, res, next) => {
         const authHeader = req.headers.authorization;
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
             return res.status(401).json({
-                message: "Token không hợp lệ !!!"
+                message: "Token không hợp lệ !"
             });
         }
 
@@ -13,12 +13,10 @@ const authenticate = async (req, res, next) => {
         const decoded = jwt.verify(token, process.env.JWT_ACCESS_TOKEN_SECRET);
 
         req.user = decoded;
-
         next();
-
     } catch (error) {
         return res.status(401).json({
-            message: "Token không hợp lệ !!!"
+            message: "Token không hợp lệ !"
         });
     }
 }
@@ -26,7 +24,7 @@ const authenticate = async (req, res, next) => {
 const authorizeAdmin = (req, res, next) => {
     if (req.user.role != "admin") {
         return res.status(401).json({
-            message: "Bạn không có quyền truy cập vào tài nguyên này !!!"
+            message: "Bạn không có quyền truy cập vào tài nguyên này !"
         })
     }
     next();

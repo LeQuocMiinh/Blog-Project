@@ -3,7 +3,6 @@ const jwtService = require('../../util/jwt-service');
 const bcrypt = require('bcrypt');
 
 class AuthorController {
-
     // [POST] - Register
     async register(req, res, next) {
         try {
@@ -18,7 +17,7 @@ class AuthorController {
             const existsUser = await Author.findOne({
                 $or: [
                     { email: email },
-                    {name: name}
+                    { name: name }
                 ]
             });
             if (existsUser) {

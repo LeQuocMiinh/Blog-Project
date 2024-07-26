@@ -11,7 +11,6 @@ const TagSchema = new Schema({
     timestamps: true
 });
 
-
 generateSlug(TagSchema);
 
 const Tag = mongoose.model('Tag', TagSchema);
