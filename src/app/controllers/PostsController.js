@@ -1,13 +1,12 @@
 const { generatePagination } = require('../../util/generate-pagination');
 const { uploadImageFromURL } = require('../../util/upload-image-to-cloudinary');
-const Post = require('../models/post');
+const post = require('../models/post');
 
 class PostsController {
-
-    // [GET] - Get All Posts - Search Posts - Pagination
+    // [GET] - Get all posts - Search posts - Pagination
     async getPostsByFilter(req, res, next) {
         try {
-            const resultPagination = await generatePagination(Post, req.query.page, req.query.perPage, req.query.keyword);
+            const resultPagination = await generatePagination(post, req.query.page, req.query.perPage, req.query.keyword);
             res.json({
                 ...resultPagination,
                 status: true
@@ -20,7 +19,7 @@ class PostsController {
         }
     }
 
-    // [POST] - Create Post
+    // [POST] - Create post
     async createPost(req, res, next) {
         try {
             const { title, description, content, author, category, tag, image } = req.body;
@@ -31,7 +30,7 @@ class PostsController {
                 });
             }
             const imagePath = await uploadImageFromURL(image);
-            const newPost = new Post({
+            const newPost = new post({
                 title: title,
                 description: description,
                 image: imagePath,
@@ -55,11 +54,11 @@ class PostsController {
         }
     }
 
-    // [PUT] - Update Post
+    // [PUT] - Update post
     async updatePost(req, res, next) {
         try {
             const id = req.params.id;
-            const post = await Post.findById(id);
+            const post = await post.findById(id);
             if (!post) {
                 res.status(404).json({
                     message: "Đã xảy ra lỗi, vui lòng thử lại sau !",
@@ -67,7 +66,7 @@ class PostsController {
                 });
             }
 
-            await Post.findByIdAndUpdate(id, req.body);
+            await post.findByIdAndUpdate(id, req.body);
             res.json({
                 message: "Cập nhật bài viết thành công",
                 status: true,
@@ -80,11 +79,11 @@ class PostsController {
         }
     }
 
-    // [PUT] - Remove Post to Trash
+    // [PUT] - Remove post to trash
     async postToTrash(req, res, next) {
         try {
             const ids = req.params.id.split(",");
-            await Post.updateMany(
+            await post.updateMany(
                 { _id: { $in: { ids } } },
                 { $set: { deleted: true } }
             );
@@ -101,11 +100,11 @@ class PostsController {
         }
     }
 
-    // [PUT] - Restore Post
+    // [PUT] - Restore post
     async postOutTrash(req, res, next) {
         try {
             const ids = req.params.id.split(",");
-            await Post.updateMany(
+            await post.updateMany(
                 { _id: { $in: ids } },
                 { $set: { deleted: false } }
             )
@@ -122,11 +121,11 @@ class PostsController {
         }
     }
 
-    // [DELETE] - Permanently Deleted Post
+    // [DELETE] - Permanently deleted post
     async permanentlyDeletedPost(req, res, next) {
         try {
             const ids = req.params.id.split(",");
-            await Post.deleteMany(
+            await post.deleteMany(
                 { _id: { $in: ids } },
             )
 
@@ -142,11 +141,11 @@ class PostsController {
         }
     }
 
-    // [GET] - Get Recent Post
+    // [GET] - Get recent post
     async getRecentPost(req, res, next) {
         try {
             const nums = 10;
-            const resultRecentPost = await Post.find({}).sort({ createdAt: -1 }).limit(nums);
+            const resultRecentPost = await post.find({}).sort({ createdAt: -1 }).limit(nums);
 
             res.json({
                 data: resultRecentPost,
