@@ -83,6 +83,7 @@ class AuthorController {
             // Tạo token JWT
             const accessToken = await jwtService.generateJWT({
                 id: user._id,
+                name: user.name,
                 email: user.email,
                 role: user.role
             });
@@ -93,6 +94,27 @@ class AuthorController {
                 message: "Đăng nhập thành công",
                 status: true,
             });
+
+        } catch (error) {
+            res.status(500).json({
+                message: 'Đã xảy ra lỗi khi đăng nhập !',
+                status: false
+            });
+        }
+    }
+
+    // [GET] - Fetch user
+    async fetchUser(req, res, next) {
+        try {
+            const data = {
+                id: req.user.id,
+                name: req.user.name,
+                email: req.user.email
+            };
+            res.json({
+                data: data,
+                status: true
+            })
 
         } catch (error) {
             res.status(500).json({
