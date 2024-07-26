@@ -32,7 +32,6 @@ class TagController {
             const newTag = new  TagSchema({
                 title: title,
                 description: description,
-                type: "tag"
             })
 
             await newTag.save();

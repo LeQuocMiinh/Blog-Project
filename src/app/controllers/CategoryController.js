@@ -1,12 +1,17 @@
 const CategorySchema = require('../models/category');
-const { generatePagination } = require('../modules/generate-pagination');
+const { generatePagination } = require('../../util/generate-pagination');
+const { uploadImageFromURL } = require('../../util/upload-image-to-cloudinary');
 
 class CategoryController {
 
     // [GET] - Get all categories
     async getAllCategories(req, res, next) {
         try {
-            const resultPagination = await generatePagination(CategorySchema, req.query.page, req.query.perPage);
+            const resultPagination = await generatePagination({
+                collection: CategorySchema,
+                page_current: req.query.page,
+                limit: req.query.perPage
+            });
             res.json({
                 ...resultPagination,
                 status: true
@@ -18,28 +23,30 @@ class CategoryController {
             });
         }
     }
-    
+
     // [POST] - Create Category
     async createCategory(req, res, next) {
         try {
-            const { title, description, parent} = req.body;
+            const { title, description, parent, image } = req.body;
             if (!title) {
                 return res.status(400).json({
                     message: "Vui lòng nhập đầy đủ !",
                     status: false
                 });
             }
+            const imagePath = await uploadImageFromURL(image);
 
-            const newCategory = new CategorySchema ({
+            const newCategory = new CategorySchema({
                 title: title,
                 description: description,
-                type: "category",
+                image: imagePath,
                 parent: parent
             })
 
             await newCategory.save();
+
             res.json({
-                message: "Thêm danh mục bài viết thành công",
+                message: "Thêm danh mục thành công",
                 status: true
             });
         } catch (error) {
@@ -94,7 +101,7 @@ class CategoryController {
     async permanentlyDeleteCategory(req, res, next) {
         try {
             const ids = req.params.id.split(",");
-            await CategorySchema.deleteMany({_id: {$in: ids}});
+            await CategorySchema.deleteMany({ _id: { $in: ids } });
             res.json({
                 message: "Xóa vĩnh viễn danh mục thành công",
                 status: true

@@ -1,5 +1,5 @@
 const Author = require('../models/author');
-const jwtService = require('../modules/jwt-service');
+const jwtService = require('../../util/jwt-service');
 const bcrypt = require('bcrypt');
 
 class AuthorController {

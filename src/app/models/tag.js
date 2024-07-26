@@ -1,14 +1,12 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const { generateSlug } = require('../modules/auto-generate-slug');
+const { generateSlug } = require('../../util/auto-generate-slug');
 
 const TagSchema = new Schema({
     title: { type: String, maxLength: 255, required: true },
     description: { type: String, maxLength: 255 },
-    quantity_post: { type: Number, default: 0 },
-    type: {type: String, default: "tag"},
     slug: { type: String },
-    deleted: {type: Boolean, default: false}
+    deleted: { type: Boolean, default: false }
 }, {
     timestamps: true
 });
