@@ -1,7 +1,7 @@
 const Author = require('../models/author');
 const jwtService = require('../../util/jwt-service');
 const bcrypt = require('bcrypt');
-
+const { isEmail } = require("validator");
 class AuthorController {
     // [POST] - Register
     async register(req, res, next) {
@@ -10,6 +10,13 @@ class AuthorController {
             if (!name || !email || !password) {
                 return res.status(400).json({
                     message: 'Các trường đều là bắt buộc !',
+                    status: false
+                });
+            }
+
+            if (!isEmail(email)) {
+                return res.status(400).json({
+                    message: 'Email không hợp lệ !',
                     status: false
                 });
             }
@@ -47,9 +54,11 @@ class AuthorController {
                 message: "Tạo tài khoản thành công",
                 status: true,
             });
-
         } catch (error) {
-            res.status(500).json({ error: 'Đã xảy ra lỗi khi tạo tài khoản !' });
+            res.status(500).json({
+                message: error,
+                status: false
+            });
         }
     }
 
@@ -60,6 +69,13 @@ class AuthorController {
             if (!email || !password) {
                 return res.status(400).json({
                     message: "Vui lòng nhập đầy đủ thông tin !",
+                    status: false
+                });
+            }
+
+            if (!isEmail(email)) {
+                return res.status(400).json({
+                    message: 'Email không hợp lệ !',
                     status: false
                 });
             }
@@ -94,10 +110,9 @@ class AuthorController {
                 message: "Đăng nhập thành công",
                 status: true,
             });
-
         } catch (error) {
             res.status(500).json({
-                message: 'Đã xảy ra lỗi khi đăng nhập !',
+                message: error,
                 status: false
             });
         }
@@ -114,11 +129,10 @@ class AuthorController {
             res.json({
                 data: data,
                 status: true
-            })
-
+            });
         } catch (error) {
             res.status(500).json({
-                message: 'Đã xảy ra lỗi khi đăng nhập !',
+                message: 'Đã xảy ra lỗi, vui lòng thử lại sau !',
                 status: false
             });
         }
