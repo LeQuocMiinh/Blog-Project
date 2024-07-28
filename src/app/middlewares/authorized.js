@@ -1,12 +1,11 @@
 const jwt = require('jsonwebtoken');
+const { UnauthorizedError } = require('../../utils/api-errors');
 
 const authenticate = async (req, res, next) => {
     try {
         const authHeader = req.headers.authorization;
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            return res.status(401).json({
-                message: "Token không hợp lệ !"
-            });
+            throw new UnauthorizedError('Token không hợp lệ !');
         }
 
         const token = authHeader.split(' ')[1];
@@ -15,19 +14,14 @@ const authenticate = async (req, res, next) => {
         req.user = decoded;
         next();
     } catch (error) {
-        return res.status(401).json({
-            message: "Token không hợp lệ !"
-        });
+        next(error);
     }
 }
 
 const authorizeAdmin = (req, res, next) => {
     if (req.user.role != "admin") {
-        return res.status(401).json({
-            message: "Bạn không có quyền truy cập vào tài nguyên này !"
-        })
+        throw new UnauthorizedError('Bạn không có quyền truy cập vào tài nguyên này !');
     }
-    next();
 }
 
 module.exports = { authenticate, authorizeAdmin };

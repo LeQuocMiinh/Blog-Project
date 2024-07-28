@@ -1,17 +1,17 @@
 const mongoose = require('mongoose');
-const { generateSlug } = require('../../util/auto-generate-slug');
+const { generateSlug } = require('../../utils/auto-generate-slug');
 const Schema = mongoose.Schema;
 
 const PostSchema = new Schema({
     title: { type: String, required: true },
     description: { type: String, required: true },
-    image: {type: String },
+    image: { type: String },
     content: { type: String, required: true },
     category: [{ type: Schema.Types.ObjectId, ref: 'Category', required: true }],
     tag: [{ type: Schema.Types.ObjectId, ref: 'Tag', required: true }],
     author: { type: String },
     slug: { type: String },
-    deleted: {type: Boolean, default: false},
+    deleted: { type: Boolean, default: false },
 }, { timestamps: true });
 
 generateSlug(PostSchema);

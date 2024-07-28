@@ -1,4 +1,4 @@
-const { generatePagination } = require('../../util/generate-pagination');
+const { generatePagination } = require('../../utils/generate-pagination');
 const tag = require('../models/tag');
 class TagController {
     // [GET] - Get all tags
@@ -10,10 +10,7 @@ class TagController {
                 status: true
             })
         } catch (error) {
-            res.status(500).json({
-                message: "Đã xảy ra lỗi, vui lòng thử lại sau !",
-                status: false
-            });
+            next(error);
         }
     }
 
@@ -39,10 +36,7 @@ class TagController {
                 status: true
             });
         } catch (error) {
-            res.status(500).json({
-                message: "Đã xảy ra lỗi, vui lòng thử lại sau !",
-                status: false
-            });
+            next(error);
         }
     }
 
@@ -68,10 +62,7 @@ class TagController {
                 status: true
             });
         } catch (error) {
-            res.status(500).json({
-                message: "Đã xảy ra lỗi, vui lòng thử lại sau !",
-                status: false
-            });
+            next(error);
         }
     }
 
@@ -89,10 +80,7 @@ class TagController {
                 status: true
             });
         } catch (error) {
-            res.status(500).json({
-                message: "Đã xảy ra lỗi, vui lòng thử lại sau !",
-                status: false
-            });
+            next(error);
         }
     }
 
@@ -110,10 +98,7 @@ class TagController {
                 status: true
             });
         } catch (error) {
-            res.status(500).json({
-                message: "Đã xảy ra lỗi, vui lòng thử lại sau !",
-                status: false
-            });
+            next(error);
         }
     }
 
@@ -128,10 +113,7 @@ class TagController {
                 status: true
             });
         } catch (error) {
-            res.status(500).json({
-                message: "Đã xảy ra lỗi, vui lòng thử lại sau !",
-                status: false
-            });
+            next(error);
         }
     }
 }

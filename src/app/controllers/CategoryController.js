@@ -1,6 +1,6 @@
 const category = require('../models/category');
-const { generatePagination } = require('../../util/generate-pagination');
-const { uploadImageFromURL } = require('../../util/upload-image-to-cloudinary');
+const { generatePagination } = require('../../utils/generate-pagination');
+const { uploadImageFromURL } = require('../../utils/upload-image-to-cloudinary');
 
 class CategoryController {
     // [GET] - Get all categories
@@ -12,10 +12,7 @@ class CategoryController {
                 status: true
             })
         } catch (error) {
-            res.status(500).json({
-                message: "Đã xảy ra lỗi, vui lòng thử lại sau !",
-                status: false
-            });
+            next(error);
         }
     }
 
@@ -45,10 +42,7 @@ class CategoryController {
                 status: true
             });
         } catch (error) {
-            res.status(500).json({
-                message: "Đã xảy ra lỗi, vui lòng thử lại sau !",
-                status: false
-            });
+            next(error);
         }
     }
 
@@ -74,10 +68,7 @@ class CategoryController {
                 status: true
             });
         } catch (error) {
-            res.status(500).json({
-                message: "Đã xảy ra lỗi, vui lòng thử lại sau !",
-                status: false
-            });
+            next(error);
         }
     }
 
@@ -94,10 +85,7 @@ class CategoryController {
                 status: true
             });
         } catch (error) {
-            res.status(500).json({
-                message: "Đã xảy ra lỗi, vui lòng thử lại sau !",
-                status: false
-            });
+            next(error);
         }
     }
 
@@ -114,10 +102,7 @@ class CategoryController {
                 status: true
             });
         } catch (error) {
-            res.status(500).json({
-                message: "Đã xảy ra lỗi, vui lòng thử lại sau !",
-                status: false
-            });
+            next(error);
         }
     }
 
@@ -131,10 +116,7 @@ class CategoryController {
                 status: true
             });
         } catch (error) {
-            res.status(500).json({
-                message: "Đã xảy ra lỗi, vui lòng thử lại sau !",
-                status: false
-            });
+            next(error);
         }
     }
 

@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const { generateSlug } = require('../../util/auto-generate-slug');
+const { generateSlug } = require('../../utils/auto-generate-slug');
 
 const TagSchema = new Schema({
     title: { type: String, maxLength: 255, required: true },
