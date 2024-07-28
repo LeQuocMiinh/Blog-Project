@@ -8,22 +8,17 @@ const { APIError } = require('../../utils/api-errors');
  * @param next
  */
 module.exports = (error, req, res, _next) => {
-
   // catch api error
   if (error instanceof APIError) {
     return res.status(error.status).send({
-      error: {
-        code: error.status,
-        message: error.message,
-      },
+      message: error.message,
+      status: false,
     });
   }
 
   // connect all errors
   return res.status(500).send({
-    error: {
-      code: 500,
-      message: 'Something went wrong!',
-    },
+    message: 'Đã có lỗi xảy ra, vui lòng thử lại sau!',
+    status: false,
   });
 };

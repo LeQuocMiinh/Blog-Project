@@ -3,6 +3,20 @@ const { generatePagination } = require('../../utils/generate-pagination');
 const { uploadImageFromURL } = require('../../utils/upload-image-to-cloudinary');
 
 class CategoryController {
+    // [GET] - Get category detail
+    async getCategoryDetail(req, res, next) {
+        try {
+            const id = req.params.id;
+            const result = await category.findById(id);
+            res.json({
+                data: result,
+                status: true
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+
     // [GET] - Get all categories
     async getAllCategories(req, res, next) {
         try {
@@ -21,10 +35,7 @@ class CategoryController {
         try {
             const { title, description, parent, image } = req.body;
             if (!title) {
-                return res.status(400).json({
-                    message: "Vui lòng nhập đầy đủ !",
-                    status: false
-                });
+                throw new APIError(400, 'Vui lòng điền đầy đủ!');
             }
             const imagePath = await uploadImageFromURL(image);
 
@@ -46,17 +57,14 @@ class CategoryController {
         }
     }
 
-    //[PUT] - 
+    //[PUT] - Update category
     async updateCategory(req, res, next) {
         try {
             const id = req.params.id;
             const params = req.body;
             const existCategory = await category.findById(id);
             if (!existCategory) {
-                res.json({
-                    message: "Danh mục không tồn tại",
-                    status: false
-                });
+                throw new APIError(400, 'Danh mục không tồn tại!');
             }
 
             if (params) {
@@ -72,7 +80,7 @@ class CategoryController {
         }
     }
 
-    // [DELETE] - Move categories to trash
+    // [PUT] - Move categories to trash
     async categoryToTrash(req, res, next) {
         try {
             const ids = req.params.id.split(",");
@@ -89,7 +97,7 @@ class CategoryController {
         }
     }
 
-    // [POST] - Move categories out the trash
+    // [PUT] - Move categories out the trash
     async categoryOutTrash(req, res, next) {
         try {
             const ids = req.params.id.split(",");

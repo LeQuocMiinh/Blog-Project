@@ -6,6 +6,6 @@ const { NotFoundError } = require('../../utils/api-errors');
  * @param res
  */
 module.exports = (req, _res) => {
-  const errorMessage = `Not Found: ${req.method} on ${req.url}`;
+  const errorMessage = `Không tìm thấy: [${req.method}] - ${req.url}`;
   throw new NotFoundError(errorMessage);
 };

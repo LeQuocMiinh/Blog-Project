@@ -1,8 +1,23 @@
+const { APIError } = require('../../utils/api-errors');
 const { generatePagination } = require('../../utils/generate-pagination');
 const { uploadImageFromURL } = require('../../utils/upload-image-to-cloudinary');
 const post = require('../models/post');
 
 class PostsController {
+    // [GET] - Get post detail
+    async getPostDetail(req, res, next) {
+        try {
+            const id = req.params.id;
+            const result = await post.findById(id);
+            res.json({
+                data: result,
+                status: true
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+
     // [GET] - Get all posts - Search posts - Pagination
     async getPostsByFilter(req, res, next) {
         try {
@@ -21,10 +36,7 @@ class PostsController {
         try {
             const { title, description, content, author, category, tag, image } = req.body;
             if (!title || !description || !content || !category || !tag) {
-                return res.status(400).json({
-                    message: "Các trường đều là bắt buộc !",
-                    status: false
-                });
+                throw new APIError(400, 'Vui lòng điền đầy đủ!');
             }
             const imagePath = await uploadImageFromURL(image);
             const newPost = new post({
@@ -54,10 +66,7 @@ class PostsController {
             const id = req.params.id;
             const post = await post.findById(id);
             if (!post) {
-                res.status(404).json({
-                    message: "Đã xảy ra lỗi, vui lòng thử lại sau !",
-                    status: false
-                });
+                throw new APIError(400, 'Không tìm thấy bài viết!');
             }
 
             await post.findByIdAndUpdate(id, req.body);

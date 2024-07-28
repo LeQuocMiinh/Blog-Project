@@ -1,6 +1,20 @@
 const { generatePagination } = require('../../utils/generate-pagination');
 const tag = require('../models/tag');
 class TagController {
+    // [GET] - Get tag detail
+    async getTagDetail(req, res, next) {
+        try {
+            const id = req.params.id;
+            const result = await tag.findById(id);
+            res.json({
+                data: result,
+                status: true
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+
     // [GET] - Get all tags
     async getAllTags(req, res, next) {
         try {
@@ -19,10 +33,7 @@ class TagController {
         try {
             const { title, description } = req.body;
             if (!title) {
-                return res.status(400).json({
-                    message: "Vui lòng nhập đầy đủ !",
-                    status: false
-                });
+                throw new APIError(400, 'Vui lòng điền đầy đủ!');
             }
 
             const newTag = new tag({
@@ -47,10 +58,7 @@ class TagController {
             const params = req.body;
             const existTag = await tag.findById(id);
             if (!existTag) {
-                res.json({
-                    message: "Thẻ không tồn tại",
-                    status: false
-                });
+                throw new APIError(400, 'Thẻ bài viết không tồn tại!');
             }
 
             if (params) {
