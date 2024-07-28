@@ -2,23 +2,18 @@ const Author = require('../models/author');
 const jwtService = require('../../utils/jwt-service');
 const bcrypt = require('bcrypt');
 const { isEmail } = require("validator");
+const { APIError } = require('../../utils/api-errors');
 class AuthorController {
     // [POST] - Register
     async register(req, res, next) {
         try {
             const { name, email, password } = req.body;
             if (!name || !email || !password) {
-                return res.status(400).json({
-                    message: 'Các trường đều là bắt buộc !',
-                    status: false
-                });
+                throw new APIError(400, 'Vui lòng điền đầy đủ!');
             }
 
             if (!isEmail(email)) {
-                return res.status(400).json({
-                    message: 'Email không hợp lệ !',
-                    status: false
-                });
+                throw new APIError(400, 'Email không hợp lệ!');
             }
 
             const existsUser = await Author.findOne({
@@ -28,7 +23,7 @@ class AuthorController {
                 ]
             });
             if (existsUser) {
-                return res.status(400).json({ message: 'Tên hoặc email đã tồn tại !', status: false });
+                throw new APIError(400, 'Tên hoặc Email đã tồn tại!');
             }
 
             // Kiểm tra nếu mật khẩu được truyền vào = password secret
@@ -64,33 +59,21 @@ class AuthorController {
         try {
             const { email, password } = req.body;
             if (!email || !password) {
-                return res.status(400).json({
-                    message: "Vui lòng nhập đầy đủ thông tin !",
-                    status: false
-                });
+                throw new APIError(400, 'Vui lòng điền đầy đủ!');
             }
 
             if (!isEmail(email)) {
-                return res.status(400).json({
-                    message: 'Email không hợp lệ !',
-                    status: false
-                });
+                throw new APIError(400, 'Email không hợp lệ!');
             }
 
             const user = await Author.findOne({ email });
             if (!user) {
-                return res.status(400).json({
-                    message: "Tài khoản không tồn tại !",
-                    status: false
-                });
+                throw new APIError(400, 'Tài khoản không tồn tại!');
             }
 
             const isMatch = await bcrypt.compare(password, user.password);
             if (!isMatch) {
-                return res.status(400).json({
-                    message: 'Tài khoản hoặc mật khẩu không đúng !',
-                    status: false
-                });
+                throw new APIError(400, 'Tài khoản hoặc mật khẩu không đúng!');
             }
 
             // Tạo token JWT

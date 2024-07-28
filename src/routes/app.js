@@ -1,10 +1,10 @@
 const postsRouter = require('./posts');
 const authRouter = require('./author');
-const categoryRouter =  require('./category');
-const tagRouter =  require('./tag');
+const categoryRouter = require('./category');
+const tagRouter = require('./tag');
 
 function route(app) {
-    const apiPrefix = "/api/v4";
+    const apiPrefix = "/api/v1";
 
     app.use(`${apiPrefix}/auth`, authRouter); // Tài khoản
     app.use(`${apiPrefix}/posts`, postsRouter); // Bài viết
