@@ -10,7 +10,5 @@ router.put('/update/:id', authenticate, authorizeAdmin, postsController.updatePo
 router.put('/trash/:id', authenticate, authorizeAdmin, postsController.postToTrash);
 router.put('/restore/:id', authenticate, authorizeAdmin, postsController.postOutTrash);
 router.delete('/delete/:id', authenticate, authorizeAdmin, postsController.permanentlyDeletedPost);
-router.use((req, res, next) => {
-    res.status(404).send('API Not Found');
-});
+
 module.exports = router;

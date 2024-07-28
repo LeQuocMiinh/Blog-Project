@@ -1,5 +1,5 @@
-const { generatePagination } = require('../../util/generate-pagination');
-const { uploadImageFromURL } = require('../../util/upload-image-to-cloudinary');
+const { generatePagination } = require('../../utils/generate-pagination');
+const { uploadImageFromURL } = require('../../utils/upload-image-to-cloudinary');
 const post = require('../models/post');
 
 class PostsController {
@@ -12,10 +12,7 @@ class PostsController {
                 status: true
             });
         } catch (error) {
-            res.status(500).json({
-                message: "Đã xảy ra lỗi, vui lòng thử lại sau !",
-                status: false
-            });
+            next(error);
         }
     }
 
@@ -47,10 +44,7 @@ class PostsController {
                 status: true,
             });
         } catch (error) {
-            res.status(500).json({
-                message: "Đã xảy ra lỗi, vui lòng thử lại sau !",
-                status: false
-            });
+            next(error);
         }
     }
 
@@ -72,10 +66,7 @@ class PostsController {
                 status: true,
             });
         } catch (error) {
-            res.status(500).json({
-                message: "Đã xảy ra lỗi, vui lòng thử lại sau !",
-                status: false
-            });
+            next(error);
         }
     }
 
@@ -93,10 +84,7 @@ class PostsController {
                 status: true
             });
         } catch (error) {
-            res.status(500).json({
-                message: "Đã xảy ra lỗi, vui lòng thử lại sau !",
-                status: false
-            });
+            next(error);
         }
     }
 
@@ -114,10 +102,7 @@ class PostsController {
                 status: true
             });
         } catch (error) {
-            res.status(500).json({
-                message: "Đã xảy ra lỗi, vui lòng thử lại sau !",
-                status: false
-            });
+            next(error);
         }
     }
 
@@ -134,10 +119,7 @@ class PostsController {
                 status: true
             });
         } catch (error) {
-            res.status(500).json({
-                message: "Đã xảy ra lỗi, vui lòng thử lại sau !",
-                status: false
-            });
+            next(error);
         }
     }
 
@@ -153,10 +135,7 @@ class PostsController {
             });
 
         } catch (error) {
-            res.status(500).json({
-                message: "Đã xảy ra lỗi, vui lòng thử lại sau !",
-                status: false
-            });
+            next(error);
         }
     }
 

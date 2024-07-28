@@ -25,7 +25,7 @@ const generatePagination = async (collection, page_current, limit, search = null
             totalPost: totalPost
         };
     } catch (error) {
-        throw new Error("Đã xảy ra lỗi trong quá trình phân trang: " + error.message);
+        next(error);
     }
 }
 

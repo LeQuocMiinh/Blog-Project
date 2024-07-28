@@ -1,5 +1,5 @@
 const Author = require('../models/author');
-const jwtService = require('../../util/jwt-service');
+const jwtService = require('../../utils/jwt-service');
 const bcrypt = require('bcrypt');
 const { isEmail } = require("validator");
 class AuthorController {
@@ -50,15 +50,12 @@ class AuthorController {
 
             await newAuthor.save();
 
-            res.status(200).json({
+            res.json({
                 message: "Tạo tài khoản thành công",
                 status: true,
             });
         } catch (error) {
-            res.status(500).json({
-                message: error,
-                status: false
-            });
+            next(error);
         }
     }
 
@@ -82,7 +79,7 @@ class AuthorController {
 
             const user = await Author.findOne({ email });
             if (!user) {
-                return res.status(401).json({
+                return res.status(400).json({
                     message: "Tài khoản không tồn tại !",
                     status: false
                 });
@@ -90,7 +87,7 @@ class AuthorController {
 
             const isMatch = await bcrypt.compare(password, user.password);
             if (!isMatch) {
-                return res.status(401).json({
+                return res.status(400).json({
                     message: 'Tài khoản hoặc mật khẩu không đúng !',
                     status: false
                 });
@@ -105,16 +102,13 @@ class AuthorController {
             });
 
             // Trả về token và thông báo thành công
-            res.status(200).json({
+            res.json({
                 accessToken: accessToken,
                 message: "Đăng nhập thành công",
                 status: true,
             });
         } catch (error) {
-            res.status(500).json({
-                message: error,
-                status: false
-            });
+            next(error);
         }
     }
 
@@ -131,10 +125,7 @@ class AuthorController {
                 status: true
             });
         } catch (error) {
-            res.status(500).json({
-                message: 'Đã xảy ra lỗi, vui lòng thử lại sau !',
-                status: false
-            });
+            next(error);
         }
     }
 }
