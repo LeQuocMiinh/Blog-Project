@@ -23,9 +23,9 @@ jobs:
     - name: Install dependencies
       run: yarn install
 
-    - name: Build
-      run: yarn dev  # Nếu bạn có bước build
-
+    - name: Test
+      run: yarn test
+      
     - name: Deploy to Fly.io
       env:
         FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
