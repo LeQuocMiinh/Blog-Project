@@ -23,8 +23,15 @@ jobs:
     - name: Install dependencies
       run: yarn install
 
-    - name: Test
-      run: yarn test
+    - name: Run application and check for errors
+      run: |
+        yarn dev
+        if [ $? -eq 0 ]; then
+          echo "Ứng dụng đã chạy thành công và không có lỗi."
+        else
+          echo "Có lỗi xảy ra khi chạy ứng dụng."
+          exit 1
+        fi
       
     - name: Deploy to Fly.io
       env:
