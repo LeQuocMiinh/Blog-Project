@@ -7,7 +7,7 @@
     "watch": "node-sass -w src/resources/scss -o src/public/css",
     "start": "nodemon --inspect app.js",
     "dev": "concurrently \"yarn start\"",
-    "test": "concurrently \"yarn start\" && exit 1"
+    "test": "node app.js && exit 1"
   },
   "author": "",
   "license": "ISC",
