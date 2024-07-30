@@ -23,12 +23,9 @@ jobs:
     - name: Install dependencies
       run: yarn install
 
-    - name: Grant Access
-      run: chmod +x check-errors.sh
+    - name: Run test
+      run: yarn test
       
-    - name: Run application and check for errors
-      run: yarn build
-
     - name: Deploy to Fly.io
       env:
         FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
