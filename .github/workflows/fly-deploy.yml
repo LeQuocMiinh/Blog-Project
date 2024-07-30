@@ -1,18 +1,32 @@
-# See https://fly.io/docs/app-guides/continuous-deployment-with-github-actions/
+name: Deploy to Fly.io
 
-name: Fly Deploy
 on:
   push:
     branches:
-      - main
+      - master  # Hoặc nhánh mà bạn muốn tự động triển khai
+  pull_request:
+    branches:
+      - master  # Hoặc nhánh mà bạn muốn tự động triển khai từ PR
+
 jobs:
   deploy:
-    name: Deploy app
     runs-on: ubuntu-latest
-    concurrency: deploy-group    # optional: ensure only one action runs at a time
     steps:
-      - uses: actions/checkout@v4
-      - uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: flyctl deploy --remote-only
-        env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'  # Hoặc phiên bản Node.js bạn đang sử dụng
+
+    - name: Install dependencies
+      run: yarn install
+
+    - name: Build
+      run: yarn dev  # Nếu bạn có bước build
+
+    - name: Deploy to Fly.io
+      env:
+        FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+      run: fly deploy --remote-only
