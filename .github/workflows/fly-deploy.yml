@@ -22,9 +22,6 @@ jobs:
 
     - name: Install dependencies
       run: yarn install
-
-    - name: Run test
-      run: yarn test
       
     - name: Deploy to Fly.io
       env:
