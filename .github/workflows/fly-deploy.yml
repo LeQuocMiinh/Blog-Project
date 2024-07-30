@@ -24,15 +24,8 @@ jobs:
       run: yarn install
 
     - name: Run application and check for errors
-      run: |
-        yarn dev
-        if [ $? -eq 0 ]; then
-          echo "Ứng dụng đã chạy thành công và không có lỗi."
-        else
-          echo "Có lỗi xảy ra khi chạy ứng dụng."
-          exit 1
-        fi
-      
+      run: yarn build
+
     - name: Deploy to Fly.io
       env:
         FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
