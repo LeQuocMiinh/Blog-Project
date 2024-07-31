@@ -3,27 +3,27 @@ name: Deploy to Fly.io
 on:
   push:
     branches:
-      - master  # Hoặc nhánh mà bạn muốn tự động triển khai
+      - master # Hoặc nhánh mà bạn muốn tự động triển khai
   pull_request:
     branches:
-      - master  # Hoặc nhánh mà bạn muốn tự động triển khai từ PR
+      - master # Hoặc nhánh mà bạn muốn tự động triển khai từ PR
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'  # Hoặc phiên bản Node.js bạn đang sử dụng
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18" # Hoặc phiên bản Node.js bạn đang sử dụng
 
-    - name: Install dependencies
-      run: yarn install
-      
-    - name: Deploy to Fly.io
-      env:
-        FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-      run: fly deploy --remote-only
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Deploy to Fly.io
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: fly deploy
