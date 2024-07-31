@@ -28,4 +28,4 @@ jobs:
           curl -L https://fly.io/install.sh | sh
 
       - name: Deploy to Fly.iox
-        run: fly deploy
+        run: flyctl deploy
