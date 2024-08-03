@@ -111,6 +111,7 @@ class AuthorController {
             next(error);
         }
     }
+
 }
 
 module.exports = new AuthorController();
