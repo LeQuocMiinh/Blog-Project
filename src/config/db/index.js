@@ -7,7 +7,8 @@ async function connectMongoose() {
         // Connect to MongoDB Atlas using Mongoose
         await mongoose.connect(uri, {
             serverApi: ServerApiVersion.v1,
-            dbName: "blogs"
+            dbName: "blogs",
+            keepAlive: true,
             // Add any other Mongoose options here if needed
         });
         console.log("Successfully connected to MongoDB Atlas using Mongoose!");
