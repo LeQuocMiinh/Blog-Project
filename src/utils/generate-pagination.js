@@ -13,7 +13,9 @@ const generatePagination = async (collection, page_current, limit, search = null
             totalPages = Math.ceil(totalPost / perPage),
             next = (totalPages - page) > 0 ? page + 1 : null,
             previous = page > 1 ? page - 1 : null;
+        if (data?.parent) {
 
+        }
         return {
             data: data,
             countData: countData,

@@ -1,6 +1,5 @@
 const category = require('../models/category');
 const { generatePagination } = require('../../utils/generate-pagination');
-const { uploadImageFromURL } = require('../../utils/upload-image-to-cloudinary');
 
 class CategoryController {
     // [GET] - Get category detail
@@ -20,9 +19,35 @@ class CategoryController {
     // [GET] - Get all categories
     async getAllCategories(req, res, next) {
         try {
-            const resultPagination = await generatePagination(category, req.query.page, req.query.perPage);
+            const page = parseInt(req.query.page) || 1,
+                perPage = parseInt(req.query.perPage) || 10;
+            const skip = (page - 1) * perPage;
+            const data = await category.find({}).sort({ createdAt: -1 }).skip(skip).limit(perPage),
+                countData = data.length,
+                totalPost = await category.countDocuments(),
+                totalPages = Math.ceil(totalPost / perPage),
+                next = (totalPages - page) > 0 ? page + 1 : null,
+                previous = page > 1 ? page - 1 : null;
+            const dataAfterHandle = await Promise.all(data.map(async (item) => {
+                if (item.parent) {
+                    const res = await category.findById(item.parent);
+                    item.parent = res;
+                }
+                return item;
+            }));
+            const response = {
+                data: dataAfterHandle,
+                countData: countData,
+                perPage: perPage,
+                current: page,
+                next: next,
+                prev: previous,
+                totalPages: totalPages,
+                totalPost: totalPost
+            };
+
             res.json({
-                ...resultPagination,
+                ...response,
                 status: true
             })
         } catch (error) {
@@ -37,7 +62,7 @@ class CategoryController {
             if (!title) {
                 throw new APIError(400, 'Vui lòng điền đầy đủ!');
             }
-            const imagePath = await uploadImageFromURL(image);
+            const imagePath = req.file ? req.file.path : null;
 
             const newCategory = new category({
                 title: title,

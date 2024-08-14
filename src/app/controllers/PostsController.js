@@ -1,8 +1,7 @@
 const { APIError } = require('../../utils/api-errors');
-const { generatePagination } = require('../../utils/generate-pagination');
-const { uploadImageFromURL } = require('../../utils/upload-image-to-cloudinary');
 const post = require('../models/post');
-
+const category = require('../models/category');
+const tag = require('../models/tag');
 class PostsController {
     // [GET] - Get post detail
     async getPostDetail(req, res, next) {
@@ -21,11 +20,41 @@ class PostsController {
     // [GET] - Get all posts - Search posts - Pagination
     async getPostsByFilter(req, res, next) {
         try {
-            const resultPagination = await generatePagination(post, req.query.page, req.query.perPage, req.query.keyword);
+            const page = parseInt(req.query.page) || 1,
+                perPage = parseInt(req.query.perPage) || 10;
+            const skip = (page - 1) * perPage;
+            const data = await post.find({}).sort({ createdAt: -1 }).skip(skip).limit(perPage),
+                countData = data.length,
+                totalPost = await post.countDocuments(),
+                totalPages = Math.ceil(totalPost / perPage),
+                next = (totalPages - page) > 0 ? page + 1 : null,
+                previous = page > 1 ? page - 1 : null;
+            const dataAfterHandle = await Promise.all(data.map(async (item) => {
+                if (item.category) {
+                    const res = await category.findById(item.category);
+                    item.category = res;
+                }
+                if (item.tag) {
+                    const res = await tag.findById(item.tag);
+                    item.tag = res;
+                }
+                return item;
+            }));
+            const response = {
+                data: dataAfterHandle,
+                countData: countData,
+                perPage: perPage,
+                current: page,
+                next: next,
+                prev: previous,
+                totalPages: totalPages,
+                totalPost: totalPost
+            };
+
             res.json({
-                ...resultPagination,
+                ...response,
                 status: true
-            });
+            })
         } catch (error) {
             next(error);
         }
@@ -38,7 +67,8 @@ class PostsController {
             if (!title || !description || !content || !category || !tag) {
                 throw new APIError(400, 'Vui lòng điền đầy đủ!');
             }
-            const imagePath = await uploadImageFromURL(image);
+
+            const imagePath = req.file ? req.file.path : null;
             const newPost = new post({
                 title: title,
                 description: description,

@@ -2,11 +2,12 @@ const express = require('express');
 const router = express.Router();
 const postsController = require('../app/controllers/PostsController');
 const { authenticate, authorizeAdmin } = require('../app/middlewares/authorized');
+const { upload } = require('../utils/upload-image-to-cloudinary');
 
 router.get('/get-detail/:id', authenticate, postsController.getPostDetail);
 router.get('/get-posts-by-filter', authenticate, postsController.getPostsByFilter);
 router.get('/get-recent-posts', authenticate, postsController.getRecentPost);
-router.post('/create', authenticate, authorizeAdmin, postsController.createPost);
+router.post('/create', authenticate, authorizeAdmin, upload.single('image'), postsController.createPost);
 router.put('/update/:id', authenticate, authorizeAdmin, postsController.updatePost);
 router.put('/trash/:id', authenticate, authorizeAdmin, postsController.postToTrash);
 router.put('/restore/:id', authenticate, authorizeAdmin, postsController.postOutTrash);
