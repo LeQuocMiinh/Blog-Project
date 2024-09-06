@@ -1,5 +1,5 @@
+const { APIError } = require('../../utils/api-errors');
 const category = require('../models/category');
-const { generatePagination } = require('../../utils/generate-pagination');
 
 class CategoryController {
     // [GET] - Get category detail
@@ -7,6 +7,10 @@ class CategoryController {
         try {
             const id = req.params.id;
             const result = await category.findById(id);
+            if (!id || !result) {
+                throw new APIError(400, 'Không tồn tại danh mục!')
+            }
+
             res.json({
                 data: result,
                 status: true
@@ -62,12 +66,11 @@ class CategoryController {
             if (!title) {
                 throw new APIError(400, 'Vui lòng điền đầy đủ!');
             }
-            const imagePath = req.file ? req.file.path : null;
 
             const newCategory = new category({
                 title: title,
                 description: description,
-                image: imagePath,
+                image: image,
                 parent: parent
             })
 
@@ -86,15 +89,22 @@ class CategoryController {
     async updateCategory(req, res, next) {
         try {
             const id = req.params.id;
-            const params = req.body;
-            const existCategory = await category.findById(id);
-            if (!existCategory) {
+            const existCate = await category.findById(id);
+            if (!id || !existCate) {
                 throw new APIError(400, 'Danh mục không tồn tại!');
             }
+            let { title, description, parent, image } = req.body;
 
-            if (params) {
-                await category.findByIdAndUpdate(id, params);
-            }
+            parent = (parent === id) ? null : parent;
+
+            const newCategory = {
+                title: title,
+                description: description,
+                parent: parent,
+                image: image,
+            };
+
+            await category.findByIdAndUpdate({ _id: id }, { $set: newCategory });
 
             res.json({
                 message: "Cập nhật danh mục thành công",

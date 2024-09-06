@@ -112,6 +112,17 @@ class AuthorController {
         }
     }
 
+    async logout(req, res, next) {
+        try {
+            res.json({
+                message: 'Đăng xuất thành công',
+                status: true
+            })
+        } catch (error) {
+            next(error)
+        }
+    }
+
 }
 
 module.exports = new AuthorController();

@@ -63,19 +63,19 @@ class PostsController {
     // [POST] - Create post
     async createPost(req, res, next) {
         try {
-            const { title, description, content, author, category, tag, image } = req.body;
-            if (!title || !description || !content || !category || !tag) {
+            const { title, description, content, author, category, tag, status, image } = req.body;
+            if (!title || !content || !category || !tag) {
                 throw new APIError(400, 'Vui lòng điền đầy đủ!');
             }
 
-            const imagePath = req.file ? req.file.path : null;
             const newPost = new post({
                 title: title,
                 description: description,
-                image: imagePath,
+                image: image,
                 content: content,
-                category: [category],
-                tag: [tag],
+                category: category,
+                tag: tag,
+                status: status,
                 author: author
             });
 
@@ -94,12 +94,28 @@ class PostsController {
     async updatePost(req, res, next) {
         try {
             const id = req.params.id;
-            const post = await post.findById(id);
-            if (!post) {
+            const { title, description, content, author, category, tag, status, image } = req.body;
+            const existsPost = await post.findById(id);
+            if (!existsPost || !id) {
                 throw new APIError(400, 'Không tìm thấy bài viết!');
             }
 
-            await post.findByIdAndUpdate(id, req.body);
+            if (!title || !content || !category || !tag) {
+                throw new APIError(400, 'Vui lòng điền đầy đủ!');
+            }
+
+            const newPost = {
+                title: title,
+                description: description,
+                image: image,
+                content: content,
+                category: category,
+                tag: tag,
+                status: status,
+            };
+
+            await post.findByIdAndUpdate({ _id: id }, { $set: newPost });
+
             res.json({
                 message: "Cập nhật bài viết thành công",
                 status: true,
@@ -114,7 +130,7 @@ class PostsController {
         try {
             const ids = req.params.id.split(",");
             await post.updateMany(
-                { _id: { $in: { ids } } },
+                { _id: { $in: ids } },
                 { $set: { deleted: true } }
             );
 
