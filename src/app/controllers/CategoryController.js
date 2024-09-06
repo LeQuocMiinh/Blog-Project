@@ -1,6 +1,5 @@
+const { APIError } = require('../../utils/api-errors');
 const category = require('../models/category');
-const { generatePagination } = require('../../utils/generate-pagination');
-const { uploadImageFromURL } = require('../../utils/upload-image-to-cloudinary');
 
 class CategoryController {
     // [GET] - Get category detail
@@ -8,6 +7,10 @@ class CategoryController {
         try {
             const id = req.params.id;
             const result = await category.findById(id);
+            if (!id || !result) {
+                throw new APIError(400, 'Không tồn tại danh mục!')
+            }
+
             res.json({
                 data: result,
                 status: true
@@ -20,9 +23,35 @@ class CategoryController {
     // [GET] - Get all categories
     async getAllCategories(req, res, next) {
         try {
-            const resultPagination = await generatePagination(category, req.query.page, req.query.perPage);
+            const page = parseInt(req.query.page) || 1,
+                perPage = parseInt(req.query.perPage) || 10;
+            const skip = (page - 1) * perPage;
+            const data = await category.find({}).sort({ createdAt: -1 }).skip(skip).limit(perPage),
+                countData = data.length,
+                totalPost = await category.countDocuments(),
+                totalPages = Math.ceil(totalPost / perPage),
+                next = (totalPages - page) > 0 ? page + 1 : null,
+                previous = page > 1 ? page - 1 : null;
+            const dataAfterHandle = await Promise.all(data.map(async (item) => {
+                if (item.parent) {
+                    const res = await category.findById(item.parent);
+                    item.parent = res;
+                }
+                return item;
+            }));
+            const response = {
+                data: dataAfterHandle,
+                countData: countData,
+                perPage: perPage,
+                current: page,
+                next: next,
+                prev: previous,
+                totalPages: totalPages,
+                totalPost: totalPost
+            };
+
             res.json({
-                ...resultPagination,
+                ...response,
                 status: true
             })
         } catch (error) {
@@ -37,12 +66,11 @@ class CategoryController {
             if (!title) {
                 throw new APIError(400, 'Vui lòng điền đầy đủ!');
             }
-            const imagePath = await uploadImageFromURL(image);
 
             const newCategory = new category({
                 title: title,
                 description: description,
-                image: imagePath,
+                image: image,
                 parent: parent
             })
 
@@ -61,15 +89,22 @@ class CategoryController {
     async updateCategory(req, res, next) {
         try {
             const id = req.params.id;
-            const params = req.body;
-            const existCategory = await category.findById(id);
-            if (!existCategory) {
+            const existCate = await category.findById(id);
+            if (!id || !existCate) {
                 throw new APIError(400, 'Danh mục không tồn tại!');
             }
+            let { title, description, parent, image } = req.body;
 
-            if (params) {
-                await category.findByIdAndUpdate(id, params);
-            }
+            parent = (parent === id) ? null : parent;
+
+            const newCategory = {
+                title: title,
+                description: description,
+                parent: parent,
+                image: image,
+            };
+
+            await category.findByIdAndUpdate({ _id: id }, { $set: newCategory });
 
             res.json({
                 message: "Cập nhật danh mục thành công",

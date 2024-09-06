@@ -1,8 +1,7 @@
 const { APIError } = require('../../utils/api-errors');
-const { generatePagination } = require('../../utils/generate-pagination');
-const { uploadImageFromURL } = require('../../utils/upload-image-to-cloudinary');
 const post = require('../models/post');
-
+const category = require('../models/category');
+const tag = require('../models/tag');
 class PostsController {
     // [GET] - Get post detail
     async getPostDetail(req, res, next) {
@@ -21,11 +20,41 @@ class PostsController {
     // [GET] - Get all posts - Search posts - Pagination
     async getPostsByFilter(req, res, next) {
         try {
-            const resultPagination = await generatePagination(post, req.query.page, req.query.perPage, req.query.keyword);
+            const page = parseInt(req.query.page) || 1,
+                perPage = parseInt(req.query.perPage) || 10;
+            const skip = (page - 1) * perPage;
+            const data = await post.find({}).sort({ createdAt: -1 }).skip(skip).limit(perPage),
+                countData = data.length,
+                totalPost = await post.countDocuments(),
+                totalPages = Math.ceil(totalPost / perPage),
+                next = (totalPages - page) > 0 ? page + 1 : null,
+                previous = page > 1 ? page - 1 : null;
+            const dataAfterHandle = await Promise.all(data.map(async (item) => {
+                if (item.category) {
+                    const res = await category.findById(item.category);
+                    item.category = res;
+                }
+                if (item.tag) {
+                    const res = await tag.findById(item.tag);
+                    item.tag = res;
+                }
+                return item;
+            }));
+            const response = {
+                data: dataAfterHandle,
+                countData: countData,
+                perPage: perPage,
+                current: page,
+                next: next,
+                prev: previous,
+                totalPages: totalPages,
+                totalPost: totalPost
+            };
+
             res.json({
-                ...resultPagination,
+                ...response,
                 status: true
-            });
+            })
         } catch (error) {
             next(error);
         }
@@ -34,18 +63,19 @@ class PostsController {
     // [POST] - Create post
     async createPost(req, res, next) {
         try {
-            const { title, description, content, author, category, tag, image } = req.body;
-            if (!title || !description || !content || !category || !tag) {
+            const { title, description, content, author, category, tag, status, image } = req.body;
+            if (!title || !content || !category || !tag) {
                 throw new APIError(400, 'Vui lòng điền đầy đủ!');
             }
-            const imagePath = await uploadImageFromURL(image);
+
             const newPost = new post({
                 title: title,
                 description: description,
-                image: imagePath,
+                image: image,
                 content: content,
-                category: [category],
-                tag: [tag],
+                category: category,
+                tag: tag,
+                status: status,
                 author: author
             });
 
@@ -64,12 +94,28 @@ class PostsController {
     async updatePost(req, res, next) {
         try {
             const id = req.params.id;
-            const post = await post.findById(id);
-            if (!post) {
+            const { title, description, content, author, category, tag, status, image } = req.body;
+            const existsPost = await post.findById(id);
+            if (!existsPost || !id) {
                 throw new APIError(400, 'Không tìm thấy bài viết!');
             }
 
-            await post.findByIdAndUpdate(id, req.body);
+            if (!title || !content || !category || !tag) {
+                throw new APIError(400, 'Vui lòng điền đầy đủ!');
+            }
+
+            const newPost = {
+                title: title,
+                description: description,
+                image: image,
+                content: content,
+                category: category,
+                tag: tag,
+                status: status,
+            };
+
+            await post.findByIdAndUpdate({ _id: id }, { $set: newPost });
+
             res.json({
                 message: "Cập nhật bài viết thành công",
                 status: true,
@@ -84,7 +130,7 @@ class PostsController {
         try {
             const ids = req.params.id.split(",");
             await post.updateMany(
-                { _id: { $in: { ids } } },
+                { _id: { $in: ids } },
                 { $set: { deleted: true } }
             );
 

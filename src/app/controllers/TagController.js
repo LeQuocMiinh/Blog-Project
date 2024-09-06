@@ -55,15 +55,21 @@ class TagController {
     async updateTag(req, res, next) {
         try {
             const id = req.params.id;
-            const params = req.body;
+            const { title, description } = req.body;
             const existTag = await tag.findById(id);
+            if (!title) {
+                throw new APIError(400, 'Vui lòng điền đầy đủ!');
+            }
             if (!existTag) {
                 throw new APIError(400, 'Thẻ bài viết không tồn tại!');
             }
 
-            if (params) {
-                await tag.findByIdAndUpdate(id, params);
-            }
+            const newTag = {
+                title: title,
+                description: description,
+            };
+
+            await tag.findByIdAndUpdate({ _id: id }, { $set: newTag });
 
             res.json({
                 message: "Cập nhật thẻ thành công",
