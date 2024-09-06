@@ -1,17 +1,17 @@
-name: Fly Deploy
-on:
-  push:
-    branches:
-      - master # change to main if needed
-jobs:
-  deploy:
-    name: Deploy app
-    runs-on: ubuntu-latest
-    concurrency: deploy-group # optional: ensure only one action runs at a time
-    steps:
-      - run: yarn install
-      - uses: actions/checkout@v4
-      - uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: flyctl deploy --remote-only
-        env:
-          FLY_API_TOKEN: FlyV1 fm2_lJPECAAAAAAAAyZtxBD1hSZ7L5leXsj64ZbDlkm/wrVodHRwczovL2FwaS5mbHkuaW8vdjGWAJLOAAwMDB8Lk7lodHRwczovL2FwaS5mbHkuaW8vYWFhL3YxxDwDnhgJj/ML/nRKMiAYgnvXfNacrGWffj5TdfgGY2LU0ZetT7WzTLQQMO8cN2nRTztl/xLjnnZg5pBwFonETmhNA6Yl0X1tatt8ezA0UjVQiJr93VQ7qAmD5GG2Ce5txhbQv3tmIGsvaC7BOkIqAiR273bhZkO44AYsrCPr2XF8W6Twk7NyU+3UUeDwjw2SlAORgc4APu7vHwWRgqdidWlsZGVyH6J3Zx8BxCAlmLbu1HQDg8ZAGKKmEt4Mbnbqli6lbzBDHsawhcUF4A==,fm2_lJPETmhNA6Yl0X1tatt8ezA0UjVQiJr93VQ7qAmD5GG2Ce5txhbQv3tmIGsvaC7BOkIqAiR273bhZkO44AYsrCPr2XF8W6Twk7NyU+3UUeDwj8QQbn07DOV+7SmoLj/uT+dbr8O5aHR0cHM6Ly9hcGkuZmx5LmlvL2FhYS92MZgEks5mqfbvzwAAAAE9PYz9F84AC7QACpHOAAu0AAzEEFfW3B+SzffV/KrAYa8qqpnEIIlD6DqZMZQ9Kt7fEenCCOLA+tUSJ+kmEFIUcc83npOI
+# name: Fly Deploy
+# on:
+#   push:
+#     branches:
+#       - master # change to main if needed
+# jobs:
+#   deploy:
+#     name: Deploy app
+#     runs-on: ubuntu-latest
+#     concurrency: deploy-group # optional: ensure only one action runs at a time
+#     steps:
+#       - run: yarn install
+#       - uses: actions/checkout@v4
+#       - uses: superfly/flyctl-actions/setup-flyctl@master
+#       - run: flyctl deploy --remote-only
+#         env:
+#           FLY_API_TOKEN: FlyV1 fm2_lJPECAAAAAAAAyZtxBD1hSZ7L5leXsj64ZbDlkm/wrVodHRwczovL2FwaS5mbHkuaW8vdjGWAJLOAAwMDB8Lk7lodHRwczovL2FwaS5mbHkuaW8vYWFhL3YxxDwDnhgJj/ML/nRKMiAYgnvXfNacrGWffj5TdfgGY2LU0ZetT7WzTLQQMO8cN2nRTztl/xLjnnZg5pBwFonETmhNA6Yl0X1tatt8ezA0UjVQiJr93VQ7qAmD5GG2Ce5txhbQv3tmIGsvaC7BOkIqAiR273bhZkO44AYsrCPr2XF8W6Twk7NyU+3UUeDwjw2SlAORgc4APu7vHwWRgqdidWlsZGVyH6J3Zx8BxCAlmLbu1HQDg8ZAGKKmEt4Mbnbqli6lbzBDHsawhcUF4A==,fm2_lJPETmhNA6Yl0X1tatt8ezA0UjVQiJr93VQ7qAmD5GG2Ce5txhbQv3tmIGsvaC7BOkIqAiR273bhZkO44AYsrCPr2XF8W6Twk7NyU+3UUeDwj8QQbn07DOV+7SmoLj/uT+dbr8O5aHR0cHM6Ly9hcGkuZmx5LmlvL2FhYS92MZgEks5mqfbvzwAAAAE9PYz9F84AC7QACpHOAAu0AAzEEFfW3B+SzffV/KrAYa8qqpnEIIlD6DqZMZQ9Kt7fEenCCOLA+tUSJ+kmEFIUcc83npOI
