@@ -195,6 +195,30 @@ class PostsController {
     }
 
 
+    async updateViews(req, res, next) {
+        try {
+            const id = req.params.id;
+            if (!id) {
+                throw new APIError(400, 'Không tìm thấy ID bài hoặc không đúng!');
+            }
+
+            const existsPost = await post.findByIdAndUpdate(
+                { _id: id },
+                { $inc: { views: 1 } }, // $inc để tăng giá trị của trường views
+                { new: true } // Tùy chọn này trả về tài liệu đã được cập nhật
+            )
+
+            res.json({
+                message: 'Thêm lượt xem thành công',
+                data: existsPost.views,
+                status: true
+            })
+
+        } catch (error) {
+            next(error)
+        }
+    }
+
 }
 
 module.exports = new PostsController();
