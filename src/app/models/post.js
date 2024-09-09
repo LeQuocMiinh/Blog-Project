@@ -12,6 +12,7 @@ const PostSchema = new Schema({
     slug: { type: String },
     status: { type: String, enum: ['published', 'privated', 'draft'], default: 'draft' },
     deleted: { type: Boolean, default: false },
+    views: { type: Number, default: 0 }
 }, { timestamps: true });
 
 generateSlug(PostSchema);
