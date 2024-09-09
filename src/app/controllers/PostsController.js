@@ -195,6 +195,12 @@ class PostsController {
     }
 
 
+    /**
+     * Tăng lượt xem cho bài viết
+     * @param {*} req 
+     * @param {*} res 
+     * @param {*} next 
+     */
     async updateViews(req, res, next) {
         try {
             const id = req.params.id;
