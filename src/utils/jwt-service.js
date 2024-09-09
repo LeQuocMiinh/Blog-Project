@@ -1,6 +1,4 @@
 const jwt = require('jsonwebtoken');
-const { BadRequestError } = require('./api-errors');
-
 const generateJWT = async (
     payload,
     secretKey = process.env.JWT_ACCESS_TOKEN_SECRET,
@@ -10,7 +8,7 @@ const generateJWT = async (
         const token = jwt.sign(payload, secretKey, signOption);
         return token;
     } catch (error) {
-        throw new BadRequestError(error.message);
+        return error;
     }
 }
 
@@ -23,7 +21,7 @@ const verifyJWT = async (
         const data = jwt.verify(token, secretKey, signOption);
         return data;
     } catch (error) {
-        throw new BadRequestError(error.message);
+        return error;
     }
 }
 

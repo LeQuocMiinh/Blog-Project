@@ -112,6 +112,12 @@ class AuthorController {
         }
     }
 
+    /**
+     * Đăng xuất
+     * @param {*} req 
+     * @param {*} res 
+     * @param {*} next 
+     */
     async logout(req, res, next) {
         try {
             res.json({
@@ -121,6 +127,24 @@ class AuthorController {
         } catch (error) {
             next(error)
         }
+    }
+
+    /**
+     * Tạo access token cho người dùng (không phải admin)
+     * @param {*} req 
+     * @param {*} res 
+     * @param {*} next 
+     */
+    async generateTokenForNormalUser(req, res, next) {
+        const ip = req.socket.remoteAddress;
+        const access_token = await jwtService.generateJWT({ ip });
+        if (!access_token) {
+            throw new APIError(400, 'Có lỗi xảy ra, thử lại sau!');
+        }
+        res.json({
+            access_token: access_token,
+            status: true
+        })
     }
 
 }
