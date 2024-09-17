@@ -23,6 +23,7 @@ class CategoryController {
     // [GET] - Get all categories
     async getAllCategories(req, res, next) {
         try {
+            const { deleted } = req.body;
             const page = parseInt(req.query.page) || 1,
                 perPage = parseInt(req.query.perPage) || 10;
             const skip = (page - 1) * perPage;
@@ -37,10 +38,15 @@ class CategoryController {
                     const res = await category.findById(item.parent);
                     item.parent = res;
                 }
-                return item;
+                if (deleted) {
+                    return !item.deleted ? item : null;
+                } else {
+                    return item;
+                }
             }));
+
             const response = {
-                data: dataAfterHandle,
+                data: dataAfterHandle.filter(e => e != null),
                 countData: countData,
                 perPage: perPage,
                 current: page,

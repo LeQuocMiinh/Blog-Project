@@ -20,6 +20,7 @@ class PostsController {
     // [GET] - Get all posts - Search posts - Pagination
     async getPostsByFilter(req, res, next) {
         try {
+            const { deleted } = req.body;
             const page = parseInt(req.query.page) || 1,
                 perPage = parseInt(req.query.perPage) || 10;
             const skip = (page - 1) * perPage;
@@ -38,10 +39,14 @@ class PostsController {
                     const res = await tag.findById(item.tag);
                     item.tag = res;
                 }
-                return item;
+                if (deleted) {
+                    return !item.deleted ? item : null;
+                } else {
+                    return item;
+                }
             }));
             const response = {
-                data: dataAfterHandle,
+                data: dataAfterHandle.filter(e => e != null),
                 countData: countData,
                 perPage: perPage,
                 current: page,
@@ -181,9 +186,8 @@ class PostsController {
     // [GET] - Get recent post
     async getRecentPost(req, res, next) {
         try {
-            const nums = 10;
-            const resultRecentPost = await post.find({}).sort({ createdAt: -1 }).limit(nums);
-
+            const { nums } = req.body;
+            const resultRecentPost = await post.find({ deleted: false }).sort({ createdAt: -1 }).limit(nums ? nums : 10);
             res.json({
                 data: resultRecentPost,
                 status: true
