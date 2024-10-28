@@ -5,9 +5,10 @@ const { authenticate, authorizeAdmin } = require('../app/middlewares/authorized'
 const { limitIpCallApiView } = require('../app/middlewares/get-ip');
 
 router.get('/get-detail/:id', authenticate, postsController.getPostDetail);
-router.post('/get-recent-posts', authenticate, postsController.getRecentPost);
+router.post('/get-views', authenticate, postsController.getPostViews);
+router.post('/get-recent-posts', authenticate, postsController.getPostMostView);
 router.post('/get-posts-by-filter', authenticate, postsController.getPostsByFilter);
-router.post('/:id/view', authenticate, limitIpCallApiView, postsController.updateViews);
+router.post('/:id/view', authenticate, limitIpCallApiView, postsController.updatePostViews);
 router.post('/create', authenticate, authorizeAdmin, postsController.createPost);
 router.put('/update/:id', authenticate, authorizeAdmin, postsController.updatePost);
 router.put('/trash/:id', authenticate, authorizeAdmin, postsController.postToTrash);

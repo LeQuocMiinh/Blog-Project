@@ -1,13 +1,14 @@
 const { APIError } = require('../../utils/api-errors');
-const post = require('../models/post');
+const Post = require('../models/post');
+const PostViews = require('../models/postViews');
 const category = require('../models/category');
 const tag = require('../models/tag');
 class PostsController {
-    // [GET] - Get post detail
+    // [GET] - Get Post detail
     async getPostDetail(req, res, next) {
         try {
             const id = req.params.id;
-            const result = await post.findById(id);
+            const result = await Post.findById(id);
             res.json({
                 data: result,
                 status: true
@@ -24,9 +25,9 @@ class PostsController {
             const page = parseInt(req.query.page) || 1,
                 perPage = parseInt(req.query.perPage) || 10;
             const skip = (page - 1) * perPage;
-            const data = await post.find({}).sort({ createdAt: -1 }).skip(skip).limit(perPage),
+            const data = await Post.find({}).sort({ createdAt: -1 }).skip(skip).limit(perPage),
                 countData = data.length,
-                totalPost = await post.countDocuments(),
+                totalPost = await Post.countDocuments(),
                 totalPages = Math.ceil(totalPost / perPage),
                 next = (totalPages - page) > 0 ? page + 1 : null,
                 previous = page > 1 ? page - 1 : null;
@@ -65,7 +66,7 @@ class PostsController {
         }
     }
 
-    // [POST] - Create post
+    // [Post] - Create Post
     async createPost(req, res, next) {
         try {
             const { title, description, content, author, category, tag, status, image } = req.body;
@@ -73,7 +74,7 @@ class PostsController {
                 throw new APIError(400, 'Vui lòng điền đầy đủ!');
             }
 
-            const newPost = new post({
+            const newPost = new Post({
                 title: title,
                 description: description,
                 image: image,
@@ -95,12 +96,12 @@ class PostsController {
         }
     }
 
-    // [PUT] - Update post
+    // [PUT] - Update Post
     async updatePost(req, res, next) {
         try {
             const id = req.params.id;
             const { title, description, content, author, category, tag, status, image } = req.body;
-            const existsPost = await post.findById(id);
+            const existsPost = await Post.findById(id);
             if (!existsPost || !id) {
                 throw new APIError(400, 'Không tìm thấy bài viết!');
             }
@@ -119,7 +120,7 @@ class PostsController {
                 status: status,
             };
 
-            await post.findByIdAndUpdate({ _id: id }, { $set: newPost });
+            await Post.findByIdAndUpdate({ _id: id }, { $set: newPost });
 
             res.json({
                 message: "Cập nhật bài viết thành công",
@@ -130,11 +131,11 @@ class PostsController {
         }
     }
 
-    // [PUT] - Remove post to trash
+    // [PUT] - Remove Post to trash
     async postToTrash(req, res, next) {
         try {
             const ids = req.params.id.split(",");
-            await post.updateMany(
+            await Post.updateMany(
                 { _id: { $in: ids } },
                 { $set: { deleted: true } }
             );
@@ -148,11 +149,11 @@ class PostsController {
         }
     }
 
-    // [PUT] - Restore post
+    // [PUT] - Restore Post
     async postOutTrash(req, res, next) {
         try {
             const ids = req.params.id.split(",");
-            await post.updateMany(
+            await Post.updateMany(
                 { _id: { $in: ids } },
                 { $set: { deleted: false } }
             )
@@ -166,11 +167,11 @@ class PostsController {
         }
     }
 
-    // [DELETE] - Permanently deleted post
+    // [DELETE] - Permanently deleted Post
     async permanentlyDeletedPost(req, res, next) {
         try {
             const ids = req.params.id.split(",");
-            await post.deleteMany(
+            await Post.deleteMany(
                 { _id: { $in: ids } },
             )
 
@@ -183,13 +184,22 @@ class PostsController {
         }
     }
 
-    // [GET] - Get recent post
-    async getRecentPost(req, res, next) {
+    // [GET] - Get Post Most Views - Options: Recent - Alls
+    async getPostMostView(req, res, next) {
         try {
-            const { nums } = req.body;
-            const resultRecentPost = await post.find({ deleted: false }).sort({ createdAt: -1 }).limit(nums ? nums : 10);
+            const { nums, option } = req.body;
+            let result = [];
+            if (!option) {
+                throw new (400, 'Thiếu trường dữ liệu [option]');
+            }
+            if (option === 'recent') {
+                result = await Post.find({ deleted: false }).sort({ createdAt: -1 }).limit(nums ? nums : 10);
+            }
+            if (option === 'all') {
+                result = await Post.find({ deleted: false }).sort({ views: -1 }).limit(nums ? nums : 10);
+            }
             res.json({
-                data: resultRecentPost,
+                data: result,
                 status: true
             });
 
@@ -199,20 +209,43 @@ class PostsController {
     }
 
 
-    /**
-     * Tăng lượt xem cho bài viết
-     * @param {*} req 
-     * @param {*} res 
-     * @param {*} next 
-     */
-    async updateViews(req, res, next) {
+    // [POST] - Update Post Views
+    async updatePostViews(req, res, next) {
         try {
             const id = req.params.id;
+            const today = new Date();
+            const localToday = new Date(today.toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" }));
+            localToday.setHours(0, 0, 0, 0);
+
             if (!id) {
                 throw new APIError(400, 'Không tìm thấy ID bài hoặc không đúng!');
             }
 
-            const existsPost = await post.findByIdAndUpdate(
+            let postViews = await PostViews.findOne({ postId: id });
+
+            if (!postViews) {
+                postViews = new PostViews({
+                    postId: id,
+                    dailyViews: [{ date: today, views: 1 }]
+                })
+
+            } else {
+                let todayView = postViews.dailyViews.find(view => {
+                    const viewDate = new Date(view.date);
+                    viewDate.setHours(0, 0, 0, 0);
+                    return viewDate.getTime() === localToday.getTime();
+                });
+
+                if (todayView) {
+                    todayView.views += 1;
+                } else {
+                    postViews.dailyViews.push({ date: today, views: 1 })
+                }
+            }
+
+            await postViews.save();
+
+            await Post.findByIdAndUpdate(
                 { _id: id },
                 { $inc: { views: 1 } }, // $inc để tăng giá trị của trường views
                 { new: true } // Tùy chọn này trả về tài liệu đã được cập nhật
@@ -220,7 +253,8 @@ class PostsController {
 
             res.json({
                 message: 'Thêm lượt xem thành công',
-                data: existsPost.views,
+                now: today,
+                data: postViews.dailyViews,
                 status: true
             })
 
@@ -228,6 +262,61 @@ class PostsController {
             next(error)
         }
     }
+
+    // [POST] - Get Post Views by Option 
+    async getPostViews(req, res, next) {
+        try {
+            const { option, id } = req.body;
+            const postViews = await PostViews.findOne({ postId: id });
+
+            if (!id) {
+                throw new APIError(400, 'Không tìm thấy bài viết!');
+            }
+
+            if (!postViews) {
+                throw new APIError(400, 'Có lỗi xảy ra, vui lòng thử lại sau!');
+            }
+
+            const today = new Date().setTime(0, 0, 0, 0);
+            const localToday = new Date(today.toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" }));
+            localToday.setHours(0, 0, 0, 0);
+            let data;
+            let viewFilterByOption = {
+                "day": (postViews) => postViews.dailyViews.filter(view => new Date(view.date) >= localToday.getDate() - 7).sort((a, b) => b.date - a.date)
+            };
+
+            data = option ? viewFilterByOption[option](postViews) : postViews;
+
+            res.json({
+                data: data,
+                status: true
+            })
+
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    // [GET] - Reset Post Views
+    async resetPostViews(req, res, next) {
+        try {
+            const ids = req.params.id.split(",");
+
+            await Post.updateMany(
+                { _id: { $in: ids } },
+                { $set: { views: 0 } }
+            );
+
+            res.json({
+                message: "Làm mới lượt xem thành công",
+                status: true
+            });
+
+        } catch (error) {
+            next(error);
+        }
+    }
+
 
 }
 
