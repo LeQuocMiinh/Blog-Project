@@ -17,9 +17,8 @@ module.exports = (error, req, res, _next) => {
   }
 
   // connect all errors
-  return res.status(500).send({
+  return res.status(400).send({
     message: error,
-    //message: "Đã có lỗi xảy ra, vui lòng thử lại sau!",
     status: false,
   });
 };
