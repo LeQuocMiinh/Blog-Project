@@ -112,12 +112,7 @@ class AuthorController {
         }
     }
 
-    /**
-     * Đăng xuất
-     * @param {*} req 
-     * @param {*} res 
-     * @param {*} next 
-     */
+    // [POST] - Logout
     async logout(req, res, next) {
         try {
             res.json({
@@ -129,12 +124,7 @@ class AuthorController {
         }
     }
 
-    /**
-     * Tạo access token cho người dùng (không phải admin)
-     * @param {*} req 
-     * @param {*} res 
-     * @param {*} next 
-     */
+    // [POST] - Generate token for normal user
     async generateTokenForNormalUser(req, res, next) {
         const ip = req.socket.remoteAddress;
         const access_token = await jwtService.generateJWT({ ip });
@@ -147,6 +137,23 @@ class AuthorController {
         })
     }
 
+    // [GET] - Get users list
+    async getUserList(req, res, next) {
+        try {
+            const usersList = await Author.find({ role: "user" });
+
+            if (!usersList) {
+                throw new APIError(400, 'Có lỗi xảy ra, thử lại sau!');
+            }
+
+            res.json({
+                data: usersList,
+                status: true
+            })
+        } catch (error) {
+            next(error)
+        }
+    }
 }
 
 module.exports = new AuthorController();
