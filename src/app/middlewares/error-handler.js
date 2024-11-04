@@ -16,6 +16,13 @@ module.exports = (error, req, res, _next) => {
     });
   }
 
+  if (error != '') {
+    return res.status(400).send({
+      message: "Đã có lỗi xảy ra, hãy kiểm tra lại các tham số trong Request Body,...!",
+      status: false,
+    });
+  }
+
   // connect all errors
   return res.status(400).send({
     message: error,

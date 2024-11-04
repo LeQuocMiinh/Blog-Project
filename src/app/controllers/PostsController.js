@@ -266,7 +266,7 @@ class PostsController {
     // [POST] - Get Post Views by Option 
     async getPostViews(req, res, next) {
         try {
-            const { option, id } = req.body;
+            const { option = "day", id } = req.body;
             const postViews = await PostViews.findOne({ postId: id });
 
             if (!id) {
@@ -274,7 +274,11 @@ class PostsController {
             }
 
             if (!postViews) {
-                throw new APIError(400, 'Có lỗi xảy ra, vui lòng thử lại sau!');
+                throw new APIError(400, "Dữ liệu lượt xem của bài viết này rỗng!");
+            }
+
+            if (option != "day") {
+                throw new APIError(400, 'Truyền [Option] sai, vui lòng thử lại!');
             }
 
             const today = new Date().setTime(0, 0, 0, 0);
@@ -288,6 +292,7 @@ class PostsController {
             data = option ? viewFilterByOption[option](postViews) : postViews;
 
             res.json({
+                postId: id,
                 data: data,
                 status: true
             })
